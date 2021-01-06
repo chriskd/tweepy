@@ -154,28 +154,31 @@ class OAuth2Bearer(AuthBase):
         request.headers['Authorization'] = 'Bearer ' + self.bearer_token
         return request
 
-
 class AppAuthHandler(AuthHandler):
     """Application-only authentication handler"""
 
     OAUTH_HOST = 'api.twitter.com'
     OAUTH_ROOT = '/oauth2/'
 
-    def __init__(self, consumer_key, consumer_secret):
+    def __init__(self, bearer_token=None, consumer_key=None, consumer_secret=None):
+        if bearer_token:
+            self._bearer_token = bearer_token
+        else:
+            self._bearer_token = ''
         self.consumer_key = consumer_key
         self.consumer_secret = consumer_secret
-        self._bearer_token = ''
 
-        resp = requests.post(self._get_oauth_url('token'),
-                             auth=(self.consumer_key,
-                                   self.consumer_secret),
-                             data={'grant_type': 'client_credentials'})
-        data = resp.json()
-        if data.get('token_type') != 'bearer':
-            raise TweepError('Expected token_type to equal "bearer", '
-                             'but got %s instead' % data.get('token_type'))
+        if self.consumer_key and self.consumer_secret:
+            resp = requests.post(self._get_oauth_url('token'),
+                                auth=(self.consumer_key,
+                                    self.consumer_secret),
+                                data={'grant_type': 'client_credentials'})
+            data = resp.json()
+            if data.get('token_type') != 'bearer':
+                raise TweepError('Expected token_type to equal "bearer", '
+                                'but got %s instead' % data.get('token_type'))
 
-        self._bearer_token = data['access_token']
+            self._bearer_token = data['access_token']
 
     def _get_oauth_url(self, endpoint):
         return 'https://' + self.OAUTH_HOST + self.OAUTH_ROOT + endpoint
