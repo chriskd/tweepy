@@ -68,7 +68,7 @@ class OAuthHandler(AuthHandler):
         try:
             url = self._get_oauth_url('request_token')
             if access_type:
-                url += '?x_auth_access_type=%s' % access_type
+                url += f'?x_auth_access_type={access_type}'
             return self.oauth.fetch_request_token(url)
         except Exception as e:
             raise TweepError(e)

@@ -80,8 +80,8 @@ class Model:
         return results
 
     def __repr__(self):
-        state = ['%s=%s' % (k, repr(v)) for (k, v) in vars(self).items()]
-        return '%s(%s)' % (self.__class__.__name__, ', '.join(state))
+        state = [f'{k}={v!r}' for (k, v) in vars(self).items()]
+        return f'{self.__class__.__name__}({", ".join(state)})'
 
 
 class Status(Model, Hashable):
@@ -186,24 +186,19 @@ class User(Model, Hashable):
         self.following = False
 
     def lists_memberships(self, *args, **kwargs):
-        return self._api.lists_memberships(user_id=self.id,
-                                           *args,
-                                           **kwargs)
+        return self._api.lists_memberships(user_id=self.id, *args, **kwargs)
+
+    def lists_ownerships(self, *args, **kwargs):
+        return self._api.lists_ownerships(user_id=self.id, *args, **kwargs)
 
     def lists_subscriptions(self, *args, **kwargs):
-        return self._api.lists_subscriptions(user_id=self.id,
-                                             *args,
-                                             **kwargs)
+        return self._api.lists_subscriptions(user_id=self.id, *args, **kwargs)
 
     def lists(self, *args, **kwargs):
-        return self._api.lists_all(user_id=self.id,
-                                   *args,
-                                   **kwargs)
+        return self._api.lists_all(user_id=self.id, *args, **kwargs)
 
     def followers_ids(self, *args, **kwargs):
-        return self._api.followers_ids(user_id=self.id,
-                                       *args,
-                                       **kwargs)
+        return self._api.followers_ids(user_id=self.id, *args, **kwargs)
 
 
 class DirectMessage(Model):
@@ -321,9 +316,9 @@ class List(Model):
         return self._api.destroy_list(self.slug)
 
     def timeline(self, **kwargs):
-        return self._api.list_timeline(self.user.screen_name,
-                                       self.slug,
-                                       **kwargs)
+        return self._api.list_timeline(
+            self.user.screen_name, self.slug, **kwargs
+        )
 
     def add_member(self, id):
         return self._api.add_list_member(self.slug, id)
@@ -332,14 +327,12 @@ class List(Model):
         return self._api.remove_list_member(self.slug, id)
 
     def members(self, **kwargs):
-        return self._api.list_members(self.user.screen_name,
-                                      self.slug,
-                                      **kwargs)
+        return self._api.list_members(
+            self.user.screen_name, self.slug, **kwargs
+        )
 
     def is_member(self, id):
-        return self._api.is_list_member(self.user.screen_name,
-                                        self.slug,
-                                        id)
+        return self._api.is_list_member(self.user.screen_name, self.slug, id)
 
     def subscribe(self):
         return self._api.subscribe_list(self.user.screen_name, self.slug)
@@ -348,14 +341,14 @@ class List(Model):
         return self._api.unsubscribe_list(self.user.screen_name, self.slug)
 
     def subscribers(self, **kwargs):
-        return self._api.list_subscribers(self.user.screen_name,
-                                          self.slug,
-                                          **kwargs)
+        return self._api.list_subscribers(
+            self.user.screen_name, self.slug, **kwargs
+        )
 
     def is_subscribed(self, id):
-        return self._api.is_subscribed_list(self.user.screen_name,
-                                            self.slug,
-                                            id)
+        return self._api.is_subscribed_list(
+            self.user.screen_name, self.slug, id
+        )
 
 
 class Relation(Model):

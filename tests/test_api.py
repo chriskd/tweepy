@@ -283,6 +283,10 @@ class TweepyAPITests(TweepyTestCase):
     def testlistsmemberships(self):
         self.api.lists_memberships()
 
+    @tape.use_cassette('testlistsownerships.json')
+    def testlistsownerships(self):
+        self.api.lists_ownerships()
+
     @tape.use_cassette('testlistssubscriptions.json')
     def testlistssubscriptions(self):
         self.api.lists_subscriptions()
@@ -403,7 +407,6 @@ class TweepyAPITests(TweepyTestCase):
         self.assertFalse(self.api.cached_result)
 
 
-
 class TweepyCacheTests(unittest.TestCase):
     timeout = 0.5
     memcache_servers = ['127.0.0.1:11211']  # must be running for test to pass
@@ -428,7 +431,7 @@ class TweepyCacheTests(unittest.TestCase):
 
         # test count
         for i in range(20):
-            self.cache.store('testkey%i' % i, 'testvalue')
+            self.cache.store(f'testkey{i}', 'testvalue')
         self.assertEqual(self.cache.count(), 20, 'Count is wrong')
 
         # test flush
@@ -448,6 +451,7 @@ class TweepyCacheTests(unittest.TestCase):
         finally:
             if os.path.exists('cache_test_dir'):
                 shutil.rmtree('cache_test_dir')
+
 
 if __name__ == '__main__':
     unittest.main()
